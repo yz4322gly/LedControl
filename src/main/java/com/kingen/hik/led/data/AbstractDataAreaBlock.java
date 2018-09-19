@@ -92,7 +92,6 @@ public abstract class AbstractDataAreaBlock implements ByteArrayable
         this.type = type;
         this.content = content;
 
-
         structurePacketMessage();
     }
 

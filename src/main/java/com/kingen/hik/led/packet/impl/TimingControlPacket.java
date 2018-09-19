@@ -3,6 +3,7 @@ package com.kingen.hik.led.packet.impl;
 import com.kingen.hik.led.packet.AbstractControlPacket;
 import com.kingen.hik.led.packet.ControlOperatingCode;
 import com.kingen.hik.led.packet.StructurePacketMessageException;
+import com.kingen.hik.util.MathUtil;
 
 import java.util.Calendar;
 
@@ -13,24 +14,23 @@ import java.util.Calendar;
  */
 public class TimingControlPacket extends AbstractControlPacket
 {
-    private static final byte WEEK_MAX = 6;
-    private static final byte WEEK_MIN = 0;
-    private static final byte MONTH_MAX = 12;
-    private static final byte MONTH_MIN = 1;
-    private static final byte DAY_MAX = 31;
-    private static final byte DAY_MIN = 1;
-    private static final byte HOUR_MAX = 23;
-    private static final byte HOUR_MIN = 0;
-    private static final byte MIN_MAX = 59;
-    private static final byte MIN_MIN = 0;
-    private static final byte SEC_MAX = 59;
-    private static final byte SEC_MIN = 0;
+    private static final byte WEEK_MAX = 0x6;
+    private static final byte WEEK_MIN = 0x0;
+    private static final byte MONTH_MAX = 0x12;
+    private static final byte MONTH_MIN = 0x1;
+    private static final byte DAY_MAX = 0x31;
+    private static final byte DAY_MIN = 0x1;
+    private static final byte HOUR_MAX = 0x23;
+    private static final byte HOUR_MIN = 0x0;
+    private static final byte MIN_MAX = 0x59;
+    private static final byte MIN_MIN = 0x0;
+    private static final byte SEC_MAX = 0x59;
+    private static final byte SEC_MIN = 0x0;
 
 
     /**
      * 请调用静态方法构造{@link TimingControlPacket#createTimingControlPacket(long)}
      * 或{@link TimingControlPacket#createTimingControlPacket(byte, byte, byte, byte, byte, byte, byte)}
-     * @param operatingCode 0xC5
      * @param content 时间内容
      * @throws StructurePacketMessageException
      */
@@ -50,6 +50,8 @@ public class TimingControlPacket extends AbstractControlPacket
 
     /**
      * 按照指定时间，生成校时指令 此方法有构造失败的可能性，不推荐使用
+     * 请注意传入的所有参数均为16进制数，
+     * 请带0x或者直接通过{@link com.kingen.hik.util.MathUtil#converted16Binary(int)}传入转换后的值
      * @param year 年：实际年数据减2000，如2017发送17
      * @param week 星期：0-6星期天用0表示
      * @param month 月：1-12
@@ -94,13 +96,13 @@ public class TimingControlPacket extends AbstractControlPacket
         byte[] bytes = new byte[7];
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(timeMillis);
-        bytes[0] = (byte) (calendar.get(Calendar.YEAR) -2000);
-        bytes[1] = (byte) (calendar.get(Calendar.DAY_OF_WEEK) - 1);
-        bytes[2] = (byte) (calendar.get(Calendar.MONTH) + 1);
-        bytes[3] = (byte) calendar.get(Calendar.DATE);
-        bytes[4] = (byte) calendar.get(Calendar.HOUR_OF_DAY);
-        bytes[5] = (byte) calendar.get(Calendar.MINUTE);
-        bytes[6] = (byte) calendar.get(Calendar.SECOND);
+        bytes[0] = MathUtil.converted16Binary(calendar.get(Calendar.YEAR) -2000);
+        bytes[1] = MathUtil.converted16Binary((calendar.get(Calendar.DAY_OF_WEEK) - 1));
+        bytes[2] = MathUtil.converted16Binary((calendar.get(Calendar.MONTH) + 1));
+        bytes[3] = MathUtil.converted16Binary(calendar.get(Calendar.DATE));
+        bytes[4] = MathUtil.converted16Binary(calendar.get(Calendar.HOUR_OF_DAY));
+        bytes[5] = MathUtil.converted16Binary(calendar.get(Calendar.MINUTE));
+        bytes[6] = MathUtil.converted16Binary(calendar.get(Calendar.SECOND));
 
         return bytes;
     }

@@ -47,6 +47,7 @@ public class VoiceAnnouncementsDataAreaBlock extends AbstractDataAreaBlock
         bytes[15] = frequency;
         System.arraycopy(strLength,0,bytes,16,3);
         System.arraycopy(strBytes,0,bytes,20,strBytes.length);
+
         return new VoiceAnnouncementsDataAreaBlock(areaNumber,bytes);
     }
 

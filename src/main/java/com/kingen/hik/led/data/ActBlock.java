@@ -3,7 +3,11 @@ package com.kingen.hik.led.data;
 import com.kingen.hik.led.packet.ByteArrayable;
 import com.kingen.hik.led.packet.StructurePacketMessageException;
 import com.kingen.hik.util.ConvnetUtil;
+import com.kingen.hik.util.MathUtil;
+import com.sun.awt.AWTUtilities;
 
+import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -56,7 +60,7 @@ public class ActBlock implements ByteArrayable
     /**
      * 此节目的所有区域数据块，在list中顺序排列
      */
-    private List<AbstractDataAreaBlock> areaBlocks;
+    private List<? extends AbstractDataAreaBlock> areaBlocks;
 
     /**
      * 当调用此方法时，若{@link this#bytes}为null时<br/>
@@ -78,7 +82,7 @@ public class ActBlock implements ByteArrayable
         return this.bytes;
     }
 
-    public ActBlock(byte actNumber, List<AbstractDataAreaBlock> areaBlocks) throws StructurePacketMessageException
+    public ActBlock(byte actNumber, List< ? extends AbstractDataAreaBlock> areaBlocks) throws StructurePacketMessageException
     {
         checkParameter(actNumber, areaBlocks);
 
@@ -114,7 +118,7 @@ public class ActBlock implements ByteArrayable
         }
     }
 
-    private void checkParameter(byte actNumber, List<AbstractDataAreaBlock> areaBlocks) throws StructurePacketMessageException
+    private void checkParameter(byte actNumber, List<? extends AbstractDataAreaBlock> areaBlocks) throws StructurePacketMessageException
     {
         if (actNumber < 0)
         {
@@ -135,11 +139,26 @@ public class ActBlock implements ByteArrayable
         else
         {
             int voiceNumber = 0;
+            List<Rectangle> rectangles = new ArrayList<>(4);
             for (AbstractDataAreaBlock block : areaBlocks)
             {
+                //如果节目数据块是可视的话，得到表示此节目数据库块的矩形，进行碰撞检测
+                if (block instanceof AbstractVisibleDataAreaBlock)
+                {
+                    Rectangle rectangle = ((AbstractVisibleDataAreaBlock) block).getLedLocation().getRectangle();
+                    rectangles.add(rectangle);
+                }
                 if (block.getType() == AbstractDataAreaBlock.DataAreaType.VOICE)
                 {
                     voiceNumber++;
+                }
+            }
+            //如果整个节目的可视节目数块大于1则进行碰撞检测
+            if (rectangles.size() > 1)
+            {
+                if (MathUtil.rectsIntersects(rectangles))
+                {
+                    throw new StructurePacketMessageException("一个节目的不同可视数据块发生重合！");
                 }
             }
             if (voiceNumber > 1)

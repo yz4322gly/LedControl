@@ -4,6 +4,8 @@ import com.kingen.hik.led.packet.ByteArrayable;
 import com.kingen.hik.led.packet.StructurePacketMessageException;
 import com.kingen.hik.util.ConvnetUtil;
 
+import java.awt.*;
+
 /**
  * led显示的区域数据块
  * 所必须有的属性
@@ -24,7 +26,15 @@ public class LedLocation implements ByteArrayable
     /**
      * 一个64*64占满全屏幕的区域数据块
      */
-    public static final LedLocation MAX_SCREEN_64 = new LedLocation((short) 0,(short) 0,(short) 0x3F,(short) 0x3F);
+    public static final LedLocation MAX_SCREEN_64_64 = new LedLocation((short) 0,(short) 0,(short) 63,(short) 63);
+    public static final LedLocation HALF_LEFT_32_64 = new LedLocation((short) 0,(short) 0,(short) 31,(short) 63);
+    public static final LedLocation HALF_RIGHT_32_64 = new LedLocation((short) 32,(short) 0,(short) 63,(short) 63);
+    public static final LedLocation HALF_UP_64_32 = new LedLocation((short) 0,(short) 0,(short) 63,(short) 31);
+    public static final LedLocation HALF_DOWN_64_32 = new LedLocation((short) 0,(short) 32,(short) 63,(short) 63);
+    public static final LedLocation QUARTER_LEFT_UP_32_32 = new LedLocation((short) 0,(short) 0,(short) 31,(short) 31);
+    public static final LedLocation QUARTER_LEFT_DOWN_32_32 = new LedLocation((short) 0,(short) 32,(short) 31,(short) 63);
+    public static final LedLocation QUARTER_RIGHT_UP_32_32 = new LedLocation((short) 32,(short) 0,(short) 63,(short) 31);
+    public static final LedLocation QUARTER_RIGHT_DOWN_32_32 = new LedLocation((short) 32,(short) 32,(short) 63,(short) 63);
 
     /**
      * 表示显示区域的左上角横坐标x
@@ -43,6 +53,46 @@ public class LedLocation implements ByteArrayable
      * 表示显示区域的右下角纵坐标y
      */
     private short lowerRightY ;
+
+    public short getTopLeftX()
+    {
+        return topLeftX;
+    }
+
+    public void setTopLeftX(short topLeftX)
+    {
+        this.topLeftX = topLeftX;
+    }
+
+    public short getTopLeftY()
+    {
+        return topLeftY;
+    }
+
+    public void setTopLeftY(short topLeftY)
+    {
+        this.topLeftY = topLeftY;
+    }
+
+    public short getLowerRightX()
+    {
+        return lowerRightX;
+    }
+
+    public void setLowerRightX(short lowerRightX)
+    {
+        this.lowerRightX = lowerRightX;
+    }
+
+    public short getLowerRightY()
+    {
+        return lowerRightY;
+    }
+
+    public void setLowerRightY(short lowerRightY)
+    {
+        this.lowerRightY = lowerRightY;
+    }
 
     public LedLocation(short topLeftX, short topLeftY, short lowerRightX, short lowerRightY)
     {
@@ -95,5 +145,11 @@ public class LedLocation implements ByteArrayable
         }
         System.out.println("位置数据包为：" + ConvnetUtil.ArrayToUnsignedByte(this.bytes));
         return this.bytes;
+    }
+
+    public Rectangle getRectangle()
+    {
+        //此处是长度而不是点坐标，故而加一
+        return new Rectangle(topLeftX,topLeftY,lowerRightX - topLeftX + 1,lowerRightY - topLeftY + 1);
     }
 }

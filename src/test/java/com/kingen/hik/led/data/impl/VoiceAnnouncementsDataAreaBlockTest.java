@@ -17,7 +17,7 @@ public class VoiceAnnouncementsDataAreaBlockTest
     public static void main(String[] args) throws IOException
     {
         AbstractDataAreaBlock block = VoiceAnnouncementsDataAreaBlock
-                .createVoiceAnnouncementsDataAreaBlock((byte)1,(byte)20,"asd发挥对话覅讳飞花");
+                .createVoiceAnnouncementsDataAreaBlock((byte)1,(byte)20,"DASFDS");
         ActBlock actBlock = new ActBlock((byte)1, Collections.singletonList(block));
         List<CommonDisplayDataControlPacket> packets = CommonDisplayDataControlPacket.createCommonDisplayDataControlPacket(Collections.singletonList(actBlock));
         for (ByteArrayable byteArrayable :packets)
